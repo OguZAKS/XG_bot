@@ -33,23 +33,23 @@ async def start_command(message: types.Message):
 @dp.callback_query_handler(text='statXG')
 async def statXG(call: types.CallbackQuery):
     await call.answer()
-    photo_XG = types.InputMediaPhoto(open('XG.png', 'rb'))# открываеи фото в двоичным виде
-    await call.message.edit_media(media=photo_XG)# редактируем фотографию
+    photo_XG = types.InputMediaPhoto(open('XG.png', 'rb'))  # открываеи фото в двоичным виде
+    await call.message.edit_media(media=photo_XG)  # редактируем фотографию
     await call.message.edit_caption(caption='вы в разделе XG статистика XG - это соотношение ударов игроков и'
-                                 ' их показателей по допустимых голах, например игрок пробил с метра к чужим воротам и'
-                                 ' не забил и статистика XG показывает, что у него +1,0, то есть он не дозабил 1 гол',
-                                    reply_markup= keyboards.get_stat()) # редактируем подпись и клавиатуру
+                                            ' их показателей по допустимых голах, например игрок пробил с метра к чужим воротам и'
+                                            ' не забил и статистика XG показывает, что у него +1,0, то есть он не дозабил 1 гол',
+                                    reply_markup=keyboards.get_stat())  # редактируем подпись и клавиатуру
 
 
 # обработчик для кнопки Назад
 @dp.callback_query_handler(text='back_stat')
 async def back_stat(call: types.CallbackQuery):
     await call.answer()
-    photo_XG = types.InputMediaPhoto(open('ювентус.jpg', 'rb'))# открываеи фото в двоичным виде
-    await call.message.edit_media(media=photo_XG)# редактируем фотографию
+    photo_XG = types.InputMediaPhoto(open('ювентус.jpg', 'rb'))  # открываеи фото в двоичным виде
+    await call.message.edit_media(media=photo_XG)  # редактируем фотографию
     await call.message.edit_caption(caption="Добро пожаловать! В этом боте вы можете посмотреть реализацию игроков по"
-                                       " системе XG и вместе с этим пройти обучающий курс по теории футбола.",
-                                    reply_markup= keyboards.get_choice()) # редактируем подпись и клавиатуру
+                                            " системе XG и вместе с этим пройти обучающий курс по теории футбола.",
+                                    reply_markup=keyboards.get_choice())  # редактируем подпись и клавиатуру
 
 
 @dp.message_handler(commands=['get_data'])
@@ -58,9 +58,17 @@ async def get_data_handler(message: types.Message):
     url = 'https://understat.com/league/EPL/2023'
     response = requests.get(url)
     soup = BeautifulSoup(response.text, 'html.parser')
-
+    print(soup)
     # Извлекаем нужные данные из таблицы
-    # Здесь вам нужно будет использовать методы BeautifulSoup для поиска и извлечения данных из таблицы
+    table = soup.find('table')
+
+    rows = table.find_all('tr')
+
+    data = []
+    for row in rows:
+        cells = row.find_all('td')
+        row_data = [cell.text.strip() for cell in cells]
+        data.append(row_data)
 
     # Отправляем данные в телеграм-бота
     await bot.send_message(message.chat.id, 'Ваши данные: {}'.format(data))
